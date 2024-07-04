@@ -15,7 +15,9 @@ require __DIR__ . '/../vendor/autoload.php';
 require_once './db/AccesoDatos.php';
 // require_once './middlewares/Logger.php';
 
-require_once './controllers/UsuarioController.php';
+//require_once './controllers/UsuarioController.php';
+require_once './controllers/ProductoController.php';
+//require_once './controllers/VendedorController.php';
 
 // Load ENV
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
@@ -30,6 +32,7 @@ $app->addErrorMiddleware(true, true, true);
 // Add parse body
 $app->addBodyParsingMiddleware();
 
+/*
 // Routes
 $app->group('/usuarios', function (RouteCollectorProxy $group) {
     $group->get('[/]', \UsuarioController::class . ':TraerTodos');
@@ -43,5 +46,12 @@ $app->get('[/]', function (Request $request, Response $response) {
     $response->getBody()->write($payload);
     return $response->withHeader('Content-Type', 'application/json');
 });
+*/
+
+$app->group('/producto', function (RouteCollectorProxy $group) {
+  $group->post('[/]', \ProductoController::class . '::CargarUno');
+  $group->get('/', \ProductoController::class . '::TraerTodo');
+});
+
 
 $app->run();
