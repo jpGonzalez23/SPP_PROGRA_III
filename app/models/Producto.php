@@ -82,15 +82,15 @@ class Producto implements ICrud {
         $consulta->execute();
         return $consulta->fetchAll(PDO::FETCH_CLASS, 'Producto');
     }
-    public static function obtenerUno($obj) {
-        $db = AccesoDatos::obtenerInstancia();
-        $consulta = $db->prepararConsulta("SELECT * FROM producto WHERE nombre = :nombre AND marca = :marca");
-        $consulta->bindValue(':nombre', $obj->getNombre(), PDO::PARAM_STR);
-        $consulta->bindValue(':marca', $obj->getMarca(), PDO::PARAM_STR);
-        $consulta->execute();
 
+    public static function obtenerUno($id) {
+        $db = AccesoDatos::obtenerInstancia();
+        $consulta = $db->prepararConsulta("SELECT * FROM producto WHERE idProducto = :id");
+        $consulta->bindValue(':idProducto', $id, PDO::PARAM_INT);
+        $consulta->execute();
         return $consulta->fetchObject('Producto');
     }
+
     public static function modificar($obj) {
         $db = AccesoDatos::obtenerInstancia();
 
@@ -109,6 +109,16 @@ class Producto implements ICrud {
         $consulta = $db->prepararConsulta("DELETE FROM productos WHERE id_producto = :id");
         $consulta->bindValue(':id', $id, PDO::PARAM_INT);
         return $consulta->execute();
+    }
+
+    public static function obtenerPorMarcaYTipo($marca, $tipo) {
+        $db = AccesoDatos::obtenerInstancia();
+        $consulta = $db->prepararConsulta("SELECT * FROM producto WHERE marca = :marca AND tipo = :tipo");
+        $consulta->bindValue(':marca', $marca, PDO::PARAM_STR);
+        $consulta->bindValue(':tipo', $tipo, PDO::PARAM_STR);
+        $consulta->execute();
+
+        return $consulta->fetchObject('Producto');
     }
     
 }

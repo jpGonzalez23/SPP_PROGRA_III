@@ -48,9 +48,22 @@ $app->get('[/]', function (Request $request, Response $response) {
 });
 */
 
-$app->group('/producto', function (RouteCollectorProxy $group) {
+$app->group('/tienda/alta', function (RouteCollectorProxy $group) {
   $group->post('[/]', \ProductoController::class . '::CargarUno');
-  $group->get('/', \ProductoController::class . '::TraerTodo');
+});
+
+$app->group('/tienda/consulta', function (RouteCollectorProxy $group) { 
+  $group->get('[/]', \ProductoController::class . '::TraerTodos');
+  $group->get('/{id}', \ProductoController::class . '::TraerUno');
+  $group->get('/{marca}&{tipo}', \ProductoController::class . '::TraerPorMarcaYTipo');
+});
+
+$app->group('/ventas/alta', function (RouteCollectorProxy $group) {
+  $group->post('[/]', \VendedorController::class . '::CargarUno');
+});
+
+$app->group('/ventas/Consulta', function (RouteCollectorProxy $group) {
+  $group->get('[/]', \VendedorController::class . '::TraerTodos');
 });
 
 

@@ -18,9 +18,7 @@ class ProductoController extends Producto implements IApiUsable {
         $stock = $params['stock'];
 
         if(in_array($tipo,self::$tipoValido) && in_array($marca,self::$marcaValida)) {
-
             $producto = new Producto();
-
             $producto->setNombre($nombre);
             $producto->setPrecio($precio);
             $producto->setTipo($tipo);
@@ -39,48 +37,49 @@ class ProductoController extends Producto implements IApiUsable {
         return $response->withHeader('Content-Type', 'application/json');
     }
     public static function TraerUno($request, $response, $args) {
-        $params = $request->getParsedBody();
+        $id = $args['id'];
 
-        $nombre = $params['nombre'];
-        $marca = $params['marca'];
+        $listado = Producto::obtenerUno($id);
 
-        if(in_array($marca,self::$marcaValida) && !empty($nombre)) {
-            $producto = new Producto();
-            $producto->setNombre($nombre);
-            $producto->setMarca($marca);
-
-            $resultado = Producto::obtenerUno($producto);
-
-            if($resultado) {
-                $payload = json_encode(array("Producto: " => $resultado));
-            }
-            else {
-                $payload = json_encode(array("Mensaje Error" => "Producto no encontrado"));
-            }
-            
+        if($listado) {
+            $payload = json_encode(array("Producto" => $listado));
         }
+        else {
+            $payload = json_encode(array("Mensaje" => "No se encontro el producto"));
+        }
+
         $response->getBody()->write($payload);
         return $response->withHeader('Content-Type', 'application/json');
     }
 	public static function TraerTodos($request, $response, $args) {
         $listado = Producto::obtenerTodos();
+        $payload = json_encode(array("Lista de productos" => $listado));
+
+        $response->getBody()->write($payload);
+        return $response->withHeader('Content-Type', 'application/json');
+    }
+
+    public static function TraerPorMarcaYTipo($request, $response, $args) {
+        $params = $request->getParsedBody();
+
+        $marca = $params['marca'];
+        $tipo = $params['tipo'];
+
+        $listado = Producto::obtenerPorMarcaYTipo($marca, $tipo);
 
         if($listado) {
-            $payload = json_encode(array("Mensaje" => $listado));
+            $payload = json_encode(array("Producto" => $listado));
         }
         else {
-            $payload = json_encode(array("Mensaje error" => "Error al mostrar los productos"));
+            $payload = json_encode(array("Mensaje" => "No se encontro el producto"));
         }
 
         $response->getBody()->write($payload);
         return $response->withHeader('Content-Type', 'application/json');
-
     }
 	
 	public static function BorrarUno($request, $response, $args) {
-
     }
 	public static function ModificarUno($request, $response, $args) {
-
     }
 }
