@@ -62,7 +62,7 @@ $app->group('/ventas/alta', function (RouteCollectorProxy $group) {
   $group->post('[/]', \VendedorController::class . '::CargarUno');
 });
 
-$app->group('/ventas/Consulta', function (RouteCollectorProxy $group) {
+$app->group('/ventas/consulta', function (RouteCollectorProxy $group) {
   $group->get('[/]', \VendedorController::class . '::TraerTodos');
 });
 

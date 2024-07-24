@@ -14,15 +14,23 @@ class Producto implements ICrud {
         return $this->id;
     }
     public function setId($id) {
-        $this->id = $id;
+        if($id > 0) {
+            $this->id = $id;
+        }
+        else {
+            throw new Exception("El ID debe ser positivo");
+        }
     }
 
     public function getNombre() {
         return $this->nombre;
     }
     public function setNombre($nombre) {
-        if(isset($nombre) && !empty($nombre)) {
+        if(!empty($nombre)) {
             $this->nombre = $nombre;
+        }
+        else {
+            throw new Exception("El nombre no puede estar vacio");
         }
     }
 
@@ -30,8 +38,11 @@ class Producto implements ICrud {
         return $this->precio;
     }
     public function setPrecio($precio) {
-        if(isset($precio)) {
+        if($precio > 0) {
             $this->precio = $precio;
+        }
+        else {
+            throw new Exception("El precio debe ser positivo");
         }
     }
 
@@ -39,8 +50,10 @@ class Producto implements ICrud {
         return $this->tipo;
     }
     public function setTipo($tipo) {
-        if(isset($tipo) && !empty($tipo)) {
+        if (in_array($tipo, ['Smartphone', 'Tablet'])) {
             $this->tipo = $tipo;
+        } else {
+            throw new Exception("El tipo debe ser 'Smartphone' o 'Tablet'.");
         }
     }
 
@@ -48,8 +61,11 @@ class Producto implements ICrud {
         return $this->marca;
     }
     public function setMarca($marca) {
-        if(isset($marca) && !empty($marca)) {
+        if(!empty($marca)) {
             $this->marca = $marca;
+        }
+        else {
+            throw new Exception("La marca no puede estar vacia");
         }
     }
 
@@ -57,36 +73,39 @@ class Producto implements ICrud {
         return $this->stock;
     }
     public function setStock($stock) {
-        if(isset($stock)) {
+        if($stock > 0) {
             $this->stock = $stock;
+        }
+        else {
+            throw new Exception("El stock debe ser positivo");
         }
     }
 
-    public static function crear($obj) {
+    public static function crear($producto) {
         $db = AccesoDatos::obtenerInstancia();
         $consulta = $db->prepararConsulta("INSERT INTO producto (nombre, precio, tipo, marca, stock) VALUES (:nombre, :precio, :tipo, :marca, :stock)");
 
-        $consulta->bindValue(':nombre', $obj->getNombre(), PDO::PARAM_STR);
-        $consulta->bindValue(':precio', $obj->getPrecio());
-        $consulta->bindValue(':tipo', $obj->getTipo(), PDO::PARAM_STR);
-        $consulta->bindValue(':marca', $obj->getMarca(), PDO::PARAM_STR);
-        $consulta->bindValue(':stock', $obj->getStock(), PDO::PARAM_INT);
+        $consulta->bindValue(':nombre', $producto->getNombre(), PDO::PARAM_STR);
+        $consulta->bindValue(':precio', $producto->getPrecio(), PDO::PARAM_STR);
+        $consulta->bindValue(':tipo', $producto->getTipo(), PDO::PARAM_STR);
+        $consulta->bindValue(':marca', $producto->getMarca(), PDO::PARAM_STR);
+        $consulta->bindValue(':stock', $producto->getStock(), PDO::PARAM_INT);
 
         $consulta->execute();
 
         return $db->obtenerUltimoId();
     }
-    public static function obtenerTodos() {
+    public static function obtenerTodos(): array {
         $db = AccesoDatos::obtenerInstancia();
-        $consulta = $db->prepararConsulta("SELECT * FROM producto");
+        $consulta = $db->prepararConsulta("SELECT `id`, `nombre`, `precio`, `tipo`, `marca`, `stock` FROM `producto`");
         $consulta->execute();
         return $consulta->fetchAll(PDO::FETCH_CLASS, 'Producto');
     }
 
-    public static function obtenerUno($id) {
+    public static function obtenerUno($id): ?Producto {
         $db = AccesoDatos::obtenerInstancia();
-        $consulta = $db->prepararConsulta("SELECT * FROM producto WHERE idProducto = :id");
-        $consulta->bindValue(':idProducto', $id, PDO::PARAM_INT);
+        $consulta = $db->prepararConsulta("SELECT id, nombre, precio, tipo, marca, stock FROM producto WHERE id = :id");
+        $consulta->bindValue(':id', $id, PDO::PARAM_INT);
         $consulta->execute();
         return $consulta->fetchObject('Producto');
     }
@@ -106,7 +125,7 @@ class Producto implements ICrud {
     }
     public static function borrar($id) {
         $db = AccesoDatos::obtenerInstancia();
-        $consulta = $db->prepararConsulta("DELETE FROM productos WHERE id_producto = :id");
+        $consulta = $db->prepararConsulta("DELETE FROM productos WHERE id = :id");
         $consulta->bindValue(':id', $id, PDO::PARAM_INT);
         return $consulta->execute();
     }
