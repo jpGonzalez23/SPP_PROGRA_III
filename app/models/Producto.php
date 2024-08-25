@@ -2,7 +2,8 @@
 
 require_once './interfaces/ICrud.php';
 
-class Producto implements ICrud {
+class Producto implements ICrud
+{
     private $id;
     private $nombre;
     private $precio;
@@ -10,46 +11,51 @@ class Producto implements ICrud {
     private $marca;
     private $stock;
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
-    public function setId($id) {
-        if($id > 0) {
+    public function setId($id)
+    {
+        if ($id > 0) {
             $this->id = $id;
-        }
-        else {
+        } else {
             throw new Exception("El ID debe ser positivo");
         }
     }
 
-    public function getNombre() {
+    public function getNombre()
+    {
         return $this->nombre;
     }
-    public function setNombre($nombre) {
-        if(!empty($nombre)) {
+    public function setNombre($nombre)
+    {
+        if (!empty($nombre)) {
             $this->nombre = $nombre;
-        }
-        else {
+        } else {
             throw new Exception("El nombre no puede estar vacio");
         }
     }
 
-    public function getPrecio() {
+    public function getPrecio()
+    {
         return $this->precio;
     }
-    public function setPrecio($precio) {
-        if($precio > 0) {
+    public function setPrecio($precio)
+    {
+        if ($precio > 0) {
             $this->precio = $precio;
-        }
-        else {
+        } else {
             throw new Exception("El precio debe ser positivo");
         }
     }
 
-    public function getTipo() {
+    public function getTipo()
+    {
         return $this->tipo;
     }
-    public function setTipo($tipo) {
+    public function setTipo($tipo)
+    {
         if (in_array($tipo, ['Smartphone', 'Tablet'])) {
             $this->tipo = $tipo;
         } else {
@@ -57,31 +63,34 @@ class Producto implements ICrud {
         }
     }
 
-    public function getMarca() {
+    public function getMarca()
+    {
         return $this->marca;
     }
-    public function setMarca($marca) {
-        if(!empty($marca)) {
+    public function setMarca($marca)
+    {
+        if (!empty($marca)) {
             $this->marca = $marca;
-        }
-        else {
+        } else {
             throw new Exception("La marca no puede estar vacia");
         }
     }
 
-    public function getStock() {
+    public function getStock()
+    {
         return $this->stock;
     }
-    public function setStock($stock) {
-        if($stock > 0) {
+    public function setStock($stock)
+    {
+        if ($stock > 0) {
             $this->stock = $stock;
-        }
-        else {
+        } else {
             throw new Exception("El stock debe ser positivo");
         }
     }
 
-    public static function crear($producto) {
+    public static function crear($producto)
+    {
         $db = AccesoDatos::obtenerInstancia();
         $consulta = $db->prepararConsulta("INSERT INTO producto (nombre, precio, tipo, marca, stock) VALUES (:nombre, :precio, :tipo, :marca, :stock)");
 
@@ -95,22 +104,25 @@ class Producto implements ICrud {
 
         return $db->obtenerUltimoId();
     }
-    public static function obtenerTodos(): array {
+    public static function obtenerTodos(): array
+    {
         $db = AccesoDatos::obtenerInstancia();
-        $consulta = $db->prepararConsulta("SELECT `id`, `nombre`, `precio`, `tipo`, `marca`, `stock` FROM `producto`");
+        $consulta = $db->prepararConsulta("SELECT * FROM `producto`");
         $consulta->execute();
         return $consulta->fetchAll(PDO::FETCH_CLASS, 'Producto');
     }
 
-    public static function obtenerUno($id): ?Producto {
+    public static function obtenerUno($id): ?Producto
+    {
         $db = AccesoDatos::obtenerInstancia();
-        $consulta = $db->prepararConsulta("SELECT id, nombre, precio, tipo, marca, stock FROM producto WHERE id = :id");
+        $consulta = $db->prepararConsulta("SELECT * FROM producto WHERE id = :id");
         $consulta->bindValue(':id', $id, PDO::PARAM_INT);
         $consulta->execute();
         return $consulta->fetchObject('Producto');
     }
 
-    public static function modificar($obj) {
+    public static function modificar($obj)
+    {
         $db = AccesoDatos::obtenerInstancia();
 
         $consulta = $db->prepararConsulta("UPDATE producto SET nombre = :nombre, precio = :precio, tipo = :tipo, marca = :marca, stock = :stock WHERE id = :valor");
@@ -123,14 +135,16 @@ class Producto implements ICrud {
 
         $consulta->execute();
     }
-    public static function borrar($id) {
+    public static function borrar($id)
+    {
         $db = AccesoDatos::obtenerInstancia();
         $consulta = $db->prepararConsulta("DELETE FROM productos WHERE id = :id");
         $consulta->bindValue(':id', $id, PDO::PARAM_INT);
         return $consulta->execute();
     }
 
-    public static function obtenerPorMarcaYTipo($marca, $tipo) {
+    public static function obtenerPorMarcaYTipo($marca, $tipo)
+    {
         $db = AccesoDatos::obtenerInstancia();
         $consulta = $db->prepararConsulta("SELECT * FROM producto WHERE marca = :marca AND tipo = :tipo");
         $consulta->bindValue(':marca', $marca, PDO::PARAM_STR);
@@ -139,5 +153,4 @@ class Producto implements ICrud {
 
         return $consulta->fetchObject('Producto');
     }
-    
 }

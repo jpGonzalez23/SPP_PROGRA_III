@@ -52,10 +52,10 @@ $app->group('/tienda/alta', function (RouteCollectorProxy $group) {
   $group->post('[/]', \ProductoController::class . '::CargarUno');
 });
 
-$app->group('/tienda/consulta', function (RouteCollectorProxy $group) { 
-  $group->get('[/]', \ProductoController::class . '::TraerTodos');
-  $group->get('/{id}', \ProductoController::class . '::TraerUno');
-  $group->get('/{marca}&{tipo}', \ProductoController::class . '::TraerPorMarcaYTipo');
+$app->group('/tienda/consulta', function (RouteCollectorProxy $group) {
+  $group->get('/{id}', \ProductoController::class . ':TraerUno');
+  $group->get('[/]', \ProductoController::class . ':TraerTodos');
+  $group->get('/{marca}&{tipo}', \ProductoController::class . ':TraerPorMarcaYTipo');
 });
 
 $app->group('/ventas/alta', function (RouteCollectorProxy $group) {
